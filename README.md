@@ -18,7 +18,11 @@ Spring Boot 3.3.5, Java 17+, Maven (`./mvnw`). Puerto local: **8083**. Responsab
 
 ## Variables de entorno
 
-`AZURE_TENANT_ID`, RABBITMQ_HOST/PORT/USER/PASSWORD, DB_HOST/PORT/NAME/USER/PASSWORD (perfil prod)
+`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, RABBITMQ_HOST/PORT/USER/PASS, DB_HOST/PORT/NAME/USER/PASS (perfil prod)
+
+## Pruebas
+
+`./mvnw test` ejecuta 7 pruebas: servicio de notificaciones, listener RabbitMQ y seguridad por perfil `secure`. No necesitan brokers ni base de datos externos (H2 en memoria; los listeners de RabbitMQ/Kafka se desactivan en los tests).
 
 ## Ejecutar
 

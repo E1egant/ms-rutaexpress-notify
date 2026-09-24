@@ -7,15 +7,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
+import java.util.UUID;
 
 @Entity
-@Table(name = "notifications")
+@Table(name = "notifications", uniqueConstraints = @UniqueConstraint(columnNames = "messageId"))
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, updatable = false)
+    private UUID messageId;
 
     @Column(nullable = false)
     private String channel;
@@ -42,6 +47,14 @@ public class Notification {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(UUID messageId) {
+        this.messageId = messageId;
     }
 
     public String getChannel() {

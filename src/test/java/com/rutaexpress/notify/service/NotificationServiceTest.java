@@ -1,6 +1,7 @@
 package com.rutaexpress.notify.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -35,6 +36,16 @@ class NotificationServiceTest {
         assertThat(captor.getValue().getRecipient()).isEqualTo("ana@example.com");
         assertThat(captor.getValue().getSubject()).isEqualTo("Envio aceptado");
         assertThat(captor.getValue().getBody()).isEqualTo("Tu envio fue aceptado");
+    }
+
+    @Test
+    void processDescartaUnMensajeYaProcesado() {
+        UUID messageId = UUID.randomUUID();
+        when(repository.existsByMessageId(messageId)).thenReturn(true);
+
+        service.process(new NotificationRequest(messageId, "EMAIL", "ana@example.com", "s", "b"));
+
+        verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
     }
 
     @Test

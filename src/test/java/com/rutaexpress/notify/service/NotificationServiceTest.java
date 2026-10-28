@@ -6,7 +6,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.rutaexpress.contracts.dto.NotificationDto;
-import com.rutaexpress.contracts.event.NotificationRequest;
 import com.rutaexpress.notify.domain.Notification;
 import com.rutaexpress.notify.domain.NotificationRepository;
 import java.util.List;
@@ -28,7 +27,7 @@ class NotificationServiceTest {
 
     @Test
     void processGuardaLaNotificacionConLosDatosDelMensaje() {
-        service.process(new NotificationRequest(UUID.randomUUID(), "EMAIL", "ana@example.com", "Envio aceptado", "Tu envio fue aceptado"));
+        service.process(UUID.randomUUID(), "EMAIL", "ana@example.com", "Envio aceptado", "Tu envio fue aceptado");
 
         ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
         verify(repository).save(captor.capture());
@@ -43,7 +42,7 @@ class NotificationServiceTest {
         UUID messageId = UUID.randomUUID();
         when(repository.existsByMessageId(messageId)).thenReturn(true);
 
-        service.process(new NotificationRequest(messageId, "EMAIL", "ana@example.com", "s", "b"));
+        service.process(messageId, "EMAIL", "ana@example.com", "s", "b");
 
         verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
     }

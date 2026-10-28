@@ -1,10 +1,10 @@
 package com.rutaexpress.notify.service;
 
 import com.rutaexpress.contracts.dto.NotificationDto;
-import com.rutaexpress.contracts.event.NotificationRequest;
 import com.rutaexpress.notify.domain.Notification;
 import com.rutaexpress.notify.domain.NotificationRepository;
 import java.util.List;
+import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -22,17 +22,17 @@ public class NotificationService {
     }
 
     @Transactional
-    public void process(NotificationRequest request) {
-        if (request.id() != null && repository.existsByMessageId(request.id())) {
-            log.info("Notificación {} ya procesada, se descarta el reintento", request.id());
+    public void process(UUID eventId, String channel, String recipient, String subject, String body) {
+        if (eventId != null && repository.existsByMessageId(eventId)) {
+            log.info("Mensaje {} ya procesado, se descarta el reintento", eventId);
             return;
         }
         Notification notification = new Notification();
-        notification.setMessageId(request.id());
-        notification.setChannel(request.channel());
-        notification.setRecipient(request.recipient());
-        notification.setSubject(request.subject());
-        notification.setBody(request.body());
+        notification.setMessageId(eventId);
+        notification.setChannel(channel);
+        notification.setRecipient(recipient);
+        notification.setSubject(subject);
+        notification.setBody(body);
         repository.save(notification);
     }
 

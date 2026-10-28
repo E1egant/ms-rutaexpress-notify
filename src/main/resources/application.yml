@@ -15,6 +15,34 @@ spring:
     port: ${RABBITMQ_PORT:5672}
     username: ${RABBITMQ_USER:rutaexpress}
     password: ${RABBITMQ_PASS:rutaexpress}
+    listener:
+      simple:
+        acknowledge-mode: manual
+        default-requeue-rejected: false
+
+rutaexpress:
+  rabbit:
+    exchanges:
+      direct: cmd.direct
+      topic: cmd.topic
+      dead: cmd.dead.dlx
+    queues:
+      email: q.cmd.email
+      warehouse: q.cmd.warehouse
+      label: q.cmd.label
+      dlq-suffix: .dlq
+    routing:
+      email-send: email.send
+      warehouse-ticket: warehouse.ticket
+      label-gen: label.gen
+      email-pattern: "email.*"
+      warehouse-pattern: "warehouse.#"
+      label-pattern: "label.*"
+      email-dead: "email.#"
+      warehouse-dead: "warehouse.#"
+      label-dead: "label.#"
+    retry:
+      max-attempts: 3
 
 server:
   port: 8083

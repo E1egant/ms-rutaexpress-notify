@@ -1,6 +1,6 @@
 # ms-rutaexpress-notify
 
-Consumidor RabbitMQ: procesa las notificaciones (email/push, ticket de bodega) y las registra.
+Consumidor RabbitMQ: un listener por dominio (email, bodega, etiqueta) con ACK manual, reintentos y DLQ; registra lo procesado.
 
 Spring Boot 3.3.5, Java 17+, Maven (`./mvnw`). Puerto local: **8083**. Responsable: Diego / Claude (código inicial: opencode).
 
@@ -9,6 +9,10 @@ Spring Boot 3.3.5, Java 17+, Maven (`./mvnw`). Puerto local: **8083**. Responsab
 | Método | Ruta | Descripción |
 |---|---|---|
 | GET | `/api/notifications` | notificaciones registradas |
+
+## Mensajería
+
+Topología (3 exchanges, 3 colas + 3 DLQ, bindings direct y topic) en `config/RabbitConfig`; nombres en `application.yml` (`rutaexpress.rabbit.*`). Consumidores en `messaging/{email,warehouse,label}`; `messaging/AckSupport` aplica ACK manual, 3 intentos en proceso y NACK sin reencolar (DLQ + log). Idempotencia por `eventId` del envelope. Detalle en `contratos/rabbitmq.md` del central.
 
 ## Perfiles
 
@@ -22,7 +26,7 @@ Spring Boot 3.3.5, Java 17+, Maven (`./mvnw`). Puerto local: **8083**. Responsab
 
 ## Pruebas
 
-`./mvnw test` ejecuta 7 pruebas: servicio de notificaciones, listener RabbitMQ y seguridad por perfil `secure`. No necesitan brokers ni base de datos externos (H2 en memoria; los listeners de RabbitMQ/Kafka se desactivan en los tests).
+`./mvnw test` ejecuta 12 pruebas: servicio de notificaciones, ACK/NACK/DLQ/reintentos, consumidor y seguridad por perfil `secure`. No necesitan brokers ni base de datos externos (H2 en memoria; los listeners de RabbitMQ/Kafka se desactivan en los tests).
 
 ## Ejecutar
 

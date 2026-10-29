@@ -12,7 +12,7 @@ Spring Boot 3.3.5, Java 17+, Maven (`./mvnw`). Puerto local: **8083**. Responsab
 
 ## Mensajería
 
-Topología (3 exchanges, 3 colas + 3 DLQ, bindings direct y topic) en `config/RabbitConfig`; nombres en `application.yml` (`rutaexpress.rabbit.*`). Consumidores en `messaging/{email,warehouse,label}`; `messaging/AckSupport` aplica ACK manual, 3 intentos en proceso y NACK sin reencolar (DLQ + log). Idempotencia por `eventId` del envelope. Detalle en `contratos/rabbitmq.md` del central.
+Topología (3 exchanges, 3 colas + 3 DLQ, bindings direct y topic) en `config/RabbitConfig`; nombres en `application.yml` (`rutaexpress.rabbit.*`). Consumidores en `messaging/{email,warehouse,label}`; `messaging/AckSupport` aplica ACK manual, 3 intentos en proceso y NACK sin reencolar (DLQ + log; los datos inválidos van a la DLQ sin reintentos). Idempotencia por `eventId` del envelope. Detalle en `contratos/rabbitmq.md` del central.
 
 ## Perfiles
 
@@ -26,7 +26,7 @@ Topología (3 exchanges, 3 colas + 3 DLQ, bindings direct y topic) en `config/Ra
 
 ## Pruebas
 
-`./mvnw test` ejecuta 12 pruebas: servicio de notificaciones, ACK/NACK/DLQ/reintentos, consumidor y seguridad por perfil `secure`. No necesitan brokers ni base de datos externos (H2 en memoria; los listeners de RabbitMQ/Kafka se desactivan en los tests).
+`./mvnw test` ejecuta 14 pruebas: servicio de notificaciones, ACK/NACK/DLQ/reintentos, consumidor y seguridad por perfil `secure`. No necesitan brokers ni base de datos externos (H2 en memoria; los listeners de RabbitMQ/Kafka se desactivan en los tests).
 
 ## Ejecutar
 

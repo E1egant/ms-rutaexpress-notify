@@ -23,6 +23,9 @@ public class NotificationService {
 
     @Transactional
     public void process(UUID eventId, String channel, String recipient, String subject, String body) {
+        if (channel == null || channel.isBlank() || recipient == null || recipient.isBlank()) {
+            throw new IllegalArgumentException("channel y recipient son obligatorios");
+        }
         if (eventId != null && repository.existsByMessageId(eventId)) {
             log.info("Mensaje {} ya procesado, se descarta el reintento", eventId);
             return;

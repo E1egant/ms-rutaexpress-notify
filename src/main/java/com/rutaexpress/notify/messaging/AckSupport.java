@@ -10,7 +10,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * ACK manual y política de errores comunes a los consumidores:
- * envelope inválido -> NACK sin reencolar (DLQ); error transitorio -> reintentos en proceso y,
+ * envelope inválido o dato inválido (IllegalArgumentException: no se arregla reintentando) -> NACK sin
+ * reencolar (DLQ) de inmediato; error transitorio -> reintentos en proceso y,
  * al agotarlos, NACK sin reencolar (DLQ). Todo envío a DLQ queda en el log.
  */
 @Component
@@ -36,6 +37,11 @@ public class AckSupport {
             try {
                 work.run();
                 channel.basicAck(tag, false);
+                return;
+            } catch (IllegalArgumentException e) {
+                log.error("Mensaje {} con datos inválidos en {}, enviado a la DLQ sin reintentos: {}",
+                        envelope.eventId(), queue, e.getMessage());
+                channel.basicNack(tag, false, false);
                 return;
             } catch (RuntimeException e) {
                 last = e;

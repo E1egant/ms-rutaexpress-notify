@@ -38,6 +38,14 @@ class NotificationServiceTest {
     }
 
     @Test
+    void processRechazaDestinatarioVacio() {
+        org.assertj.core.api.Assertions.assertThatThrownBy(
+                () -> service.process(UUID.randomUUID(), "EMAIL", " ", "s", "b"))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(repository, never()).save(org.mockito.ArgumentMatchers.any());
+    }
+
+    @Test
     void processDescartaUnMensajeYaProcesado() {
         UUID messageId = UUID.randomUUID();
         when(repository.existsByMessageId(messageId)).thenReturn(true);

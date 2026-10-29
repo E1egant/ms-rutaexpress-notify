@@ -61,6 +61,21 @@ class AckSupportTest {
     }
 
     @Test
+    void datoInvalidoVaADlqSinReintentos() throws Exception {
+        AtomicInteger calls = new AtomicInteger();
+
+        ack.handle("email", envelope(UUID.randomUUID(), new EmailPayload("email", "", "s", "b")),
+                channel, 11L, () -> {
+                    calls.incrementAndGet();
+                    throw new IllegalArgumentException("recipient vacío");
+                });
+
+        org.assertj.core.api.Assertions.assertThat(calls.get()).isEqualTo(1);
+        verify(channel).basicNack(11L, false, false);
+        verify(channel, never()).basicAck(anyLong(), anyBoolean());
+    }
+
+    @Test
     void siElReintentoTieneExitoHaceAck() throws Exception {
         AtomicInteger calls = new AtomicInteger();
 
